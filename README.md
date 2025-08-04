@@ -9,11 +9,11 @@ A friendly and intelligent chatbot designed to serve as a Smart City Assistant. 
 - **Interactive Chat UI:** A responsive and intuitive chat window built with HTML, CSS, and JavaScript.
 - **Gemini-Powered AI Backend:** The chatbot now connects to a Flask backend integrated with Google Gemini, enabling intelligent, context-aware responses.
 - **Civic Issue Reporting:** The bot understands and responds to common civic concerns like:
-- Potholes 🛣️
-- Garbage & Recycling 🗑️
-- Water Leaks 💧
-- Streetlight Outages 💡
-- Parking & Taxes 🅿️
+  - Potholes 🛣️
+  - Garbage & Recycling 🗑️
+  - Water Leaks 💧
+  - Streetlight Outages 💡
+  - Parking & Taxes 🅿️
 - **Ticket Generation:** Automatically creates fictional report IDs (e.g., CR123456) for user-submitted issues.
 - **Department Routing:** Identifies the appropriate city department based on the issue.
 - **Follow-Up Prompts:** Asks for location, address, or additional details to complete the report.
@@ -49,9 +49,12 @@ Once you run the full-stack application:
 
 ## 🛠️ Tech Stack
 
-Layer	Technologies Used
-Frontend	HTML5, CSS3, JavaScript (ES6+), Bootstrap
-Backend	Python, Flask, Google Gemini API, python-dotenv
+## 🛠️ Tech Stack
+
+| Layer     | Technologies Used                                      |
+|-----------|--------------------------------------------------------|
+| Frontend  | HTML5, CSS3, JavaScript (ES6+), Bootstrap              |
+| Backend   | Python, Flask, Google Gemini API, python-dotenv        |
 
 ---
 
@@ -62,7 +65,7 @@ Backend	Python, Flask, Google Gemini API, python-dotenv
 No complex setup is required! To run the chatbot:
 
 1. Ensure you have the project files on your local machine.
-2. Navigate to the `templates/` directory.
+2. Navigate to the `static/` directory.
 3. Open `index.html` in any modern web browser.
 
 ### Option 2: Full Stack with Gemini AI Backend
@@ -100,25 +103,29 @@ python app.py
 
 ## 📂 File Structure
 
-civicconnect-ai/  
-│  
-├── data/                          # Stores structured data used by the bot  
-│   └── grievances.json            # Sample dataset for user grievances or queries  
-│  
-├── static/                        # Contains all static frontend assets  
-│   ├── css/                       # Stylesheets for the chatbot UI  
-│   │   └── style.css              # Main stylesheet with layout and design  
-│   │   └── theme.css              # Stylesheet for theme switching  
-│   ├── images/                    # Backgrounds and visual assets  
-│   └── js/                        # JavaScript files for interactivity  
-│       └── chat.js                # Handles message sending and bot responses  
-│       └── theme.js               # Handles theme switching logic  
-│  
-├── templates/                     # HTML templates for rendering the UI  
-│   └── index.html                 # Main chatbot interface page  
-│  
-├── app.py                         # Backend logic placeholder (Flask/FastAPI ready)  
-└── README.md                      # Project overview and setup instructions
+civicconnect-ai/
+│
+├── data/                            # Stores structured data used by the bot
+│   └── grievances.json              # Sample dataset for civic issue types
+│
+├── static/                          # All frontend assets
+│   ├── css/                         # Stylesheets for layout and themes
+│   │   ├── style.css                # Main UI styling
+│   │   └── theme.css                # Styles for light/dark mode toggle
+│   ├── images/                      # Visual assets and backgrounds
+│   │   ├── botbackground.png        # Background for chat area
+│   │   ├── mainbackground.png       # Background for main page
+│   │   └── screenshot.png           # Screenshot of the chatbot UI
+│   ├── js/                          # JavaScript for interactivity
+│   │   ├── chat.js                  # Handles chat logic and bot responses
+│   │   └── theme.js                 # Manages theme switching
+│   └── index.html                   # Main chatbot interface page
+│
+├── .env                             # Environment variables (e.g., Gemini API key)
+├── .gitignore                       # Files and folders to ignore in Git
+├── app.py                           # Flask backend server with Gemini integration
+├── requirements.txt                 # Python dependencies
+└── README.md                        # Project documentation
 
 ---
 
