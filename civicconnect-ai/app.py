@@ -1,41 +1,78 @@
-from flask import Flask, render_template, request, jsonify
+import os
+from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS
+from dotenv import load_dotenv
+import google.generativeai as genai
 
-# Initialize the Flask application
-app = Flask(__name__)
+load_dotenv()
 
-@app.route('/')
-def index():
-    """
-    Serves the main chat page from the templates folder.
-    """
-    return render_template('index.html')
+# --- Flask App Initialization ---
+# We configure the static folder to be 'static' and serve it from the root URL
+app = Flask(__name__, static_folder='static', static_url_path='')
+CORS(app) # Enable Cross-Origin Resource Sharing
+
+# --- Initialize Gemini ---
+api_key = os.getenv("GEMINI_API_KEY")
+if not api_key:
+    raise ValueError("GEMINI_API_KEY is not set in the .env file")
+
+genai.configure(api_key=api_key)
+model = genai.GenerativeModel('gemini-1.5-flash-latest')
+
+# In-memory session store for demonstration. In production, you might use a database.
+chat_sessions = {}
+
+# System prompt to guide the AI on its role and behavior
+system_instruction = {
+    "role": "model",
+    "parts": [{
+        "text": """You are CivicConnect AI, a helpful and friendly chatbot for a city's public services website.
+Your primary goal is to assist users with their civic issues.
+You should be able to handle inquiries about:
+- Potholes and road damage
+- Garbage, trash, recycling, and waste collection
+- Water leaks and pipe bursts
+- Streetlight outages
+- Parking meter issues and other parking inquiries
+- Noise complaints
+- Property taxes
+
+When a user reports an issue, you should:
+1. Acknowledge the report.
+2. Generate a fictional ticket/reference number (e.g., CR123456).
+3. Inform them which department the issue has been forwarded to.
+4. Ask for specific, necessary follow-up information like location, address, or other details.
+5. Keep your responses concise and helpful.
+6. If you don't understand, politely ask the user to rephrase or state the topics you can help with.
+7. Be conversational and empathetic."""
+    }],
+}
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    """
-    Handles chat messages sent from the frontend.
-    This is a placeholder for future backend AI/ML model integration.
-    """
-    user_message = request.json.get('message')
+    try:
+        data = request.get_json()
+        message = data.get('message')
+        session_id = data.get('sessionId')
 
-    if not user_message:
-        return jsonify({'error': 'No message provided'}), 400
+        if not message or not session_id:
+            return jsonify({'error': 'Message and sessionId are required'}), 400
 
-    # In the future, this function would call a real chatbot model.
-    bot_response = get_backend_bot_response(user_message)
-    
-    return jsonify({'reply': bot_response})
+        # Initialize chat history for a new session
+        if session_id not in chat_sessions:
+            chat_sessions[session_id] = model.start_chat(history=[system_instruction])
 
-def get_backend_bot_response(message):
-    """
-    A placeholder for more complex backend bot logic.
-    For now, it just echoes the message back.
-    """
-    # Example of future logic:
-    # response = call_my_ai_model(message)
-    # return response
-    return f"Backend received your message: '{message}'. This feature is under development."
+        chat = chat_sessions[session_id]
+        response = chat.send_message(message)
+        
+        return jsonify({'reply': response.text})
+    except Exception as e:
+        print(f"Error with Gemini API: {e}")
+        return jsonify({'error': 'Failed to get a response from the AI.'}), 500
+
+@app.route('/')
+def serve_index():
+    return send_from_directory(app.static_folder, 'index.html')
 
 if __name__ == '__main__':
-    # Runs the Flask app in debug mode for development
-    app.run(debug=True)
+    app.run(port=3000, debug=True)

@@ -1,4 +1,3 @@
-
 **## 🤖 CivicConnect AI**
 
 A friendly and intelligent chatbot designed to serve as a "smart city assistant." This project provides a clean, modern interface for citizens to report common civic issues and get instant information about city services.
