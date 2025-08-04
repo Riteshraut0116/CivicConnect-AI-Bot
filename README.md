@@ -1,38 +1,40 @@
 **## 🤖 CivicConnect AI**
 
-A friendly and intelligent chatbot designed to serve as a "smart city assistant." This project provides a clean, modern interface for citizens to report common civic issues and get instant information about city services.
+A friendly and intelligent chatbot designed to serve as a Smart City Assistant. This project offers a clean, modern interface for citizens to report civic issues and get instant information about city services. Now powered by Google Gemini API, it brings real-time AI capabilities to the browser.
 
 ---
 
 ## ✨ Features
 
-- **Interactive Chat UI:** A responsive and intuitive chat window built with HTML, CSS, and JavaScript.
-- **Intelligent Bot Responses:** The bot can understand and respond to keywords related to common issues like:
-  - potholes 🛣️
-  - garbage & recycling 🗑️
-  - water leaks 💧
-  - streetlight outages 💡
-  - parking & taxes 🅿️
-- **Custom Backgrounds:** Features separate, customizable background images for the main page and the chat message area.
-- **Typing Indicator:** A sleek animation shows when the bot is "thinking," improving user experience.
-- **Auto-Resizing Text Area:** The message input box grows and shrinks dynamically with the content.
-- **Pure Frontend:** Runs entirely in the browser with no backend dependencies, making it lightweight and easy to deploy.
-- **Future-Ready Backend (Optional):** Includes a basic `app.py` using Flask, setting the stage for future integration with a real AI/ML model.
-- **Theme Toggle (Day/Night Mode):** Users can switch between light and dark themes for better accessibility and comfort.
-- **Attachment Support:** Users can now upload files or images directly in the chat interface for enhanced interaction.
+**Interactive Chat UI:** A responsive and intuitive chat window built with HTML, CSS, and JavaScript.
+**Gemini-Powered AI Backend:** The chatbot now connects to a Flask backend integrated with Google Gemini, enabling intelligent, context-aware responses.
+**Civic Issue Reporting:** The bot understands and responds to common civic concerns like:
+Potholes 🛣️
+Garbage & Recycling 🗑️
+Water Leaks 💧
+Streetlight Outages 💡
+Parking & Taxes 🅿️
+**Ticket Generation:** Automatically creates fictional report IDs (e.g., CR123456) for user-submitted issues.
+**Department Routing:** Identifies the appropriate city department based on the issue.
+**Follow-Up Prompts:** Asks for location, address, or additional details to complete the report.
+**Session Management:** Maintains separate chat histories for different users.
+**Typing Indicator:** A sleek animation shows when the bot is "thinking," improving user experience.
+**Auto-Resizing Text Area:** The message input box grows and shrinks dynamically with the content.
+**Theme Toggle (Day/Night Mode):** Users can switch between light and dark themes for better accessibility and comfort.
+**Attachment Support:** Users can upload files or images directly in the chat interface.
 
 ---
 
-## 🎯 Final Output (Frontend Only)
+## 🎯 Final Output (Frontend Only + Backend)
 
-Once you open index.html in your browser, you’ll see:
+Once you run the full-stack application:
 
-🌆 A beautiful cityscape background setting the tone for a smart city experience.  
-💬 A sleek, responsive chatbot panel with a welcome message from CivicConnect AI.  
-🤖 Real-time bot responses to civic issues like potholes, garbage, water leaks, and more.  
-✍️ A dynamic input box that adjusts as you type.  
-💡 A typing indicator that makes the bot feel alive and responsive.  
-🌗 A theme toggle button to switch between day and night modes.  
+🌆 A beautiful cityscape background sets the tone for a smart city experience.
+💬 A sleek, responsive chatbot panel welcomes users with CivicConnect AI.
+🤖 Real-time AI responses powered by Gemini for civic issue handling.
+✍️ A dynamic input box that adjusts as you type.
+💡 A typing indicator that makes the bot feel alive and responsive.
+🌗 A theme toggle button to switch between day and night modes.
 📎 An attachment icon to upload files or images during chat.
 
 ![Final Output](civicconnect-ai/static/images/screenshot.png)
@@ -47,10 +49,9 @@ Once you open index.html in your browser, you’ll see:
 
 ## 🛠️ Tech Stack
 
-- **HTML5:** For the core structure of the application.
-- **CSS3:** For all styling, including layouts, custom backgrounds, and animations.
-- **Vanilla JavaScript (ES6+):** For all client-side logic, including message handling, DOM manipulation, and bot responses.
-- **Python & Flask (Optional):** For the optional backend server.
+Layer	Technologies Used
+Frontend	HTML5, CSS3, JavaScript (ES6+), Bootstrap
+Backend	Python, Flask, Google Gemini API, python-dotenv
 
 ---
 
@@ -64,12 +65,35 @@ No complex setup is required! To run the chatbot:
 2. Navigate to the `templates/` directory.
 3. Open `index.html` in any modern web browser.
 
-### Option 2: With Backend Server (For Future Development)
+### Option 2: Full Stack with Gemini AI Backend
 
-1. Ensure you have Python and pip installed.
-2. Install Flask: `pip install Flask`
-3. Run the server from the project's root directory: `python app.py`
-4. Open your web browser and go to `http://localhost:5000`
+**Prerequisites:**
+Python 3.7+
+Google Gemini API Key
+
+**Steps:**
+# 1. Clone the repository
+git clone <repository-url>
+cd civicconnect-ai
+
+# 2. Create a virtual environment
+python -m venv venv
+# Activate it
+venv\Scripts\activate  # Windows
+source venv/bin/activate  # macOS/Linux
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Add your Gemini API key to a .env file
+echo GEMINI_API_KEY="your_api_key_here" > .env
+
+# 5. Run the Flask server
+python app.py
+
+**Access the App:**
+1. Open your browser and go to http://localhost:5000
+2. You’ll see the CivicConnect AI chatbot interface powered by Gemini.
 
 ---
 
