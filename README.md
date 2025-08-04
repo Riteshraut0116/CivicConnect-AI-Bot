@@ -79,7 +79,7 @@ cd civicconnect-ai
 2. Create a virtual environment
 python -m venv venv
 
-**Activate it**
+**Activate it:**
 - venv\Scripts\activate  # Windows
 - source venv/bin/activate  # macOS/Linux
 
