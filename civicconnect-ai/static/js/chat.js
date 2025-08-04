@@ -6,6 +6,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const attachBtn = document.getElementById('attach-btn');
     const fileInput = document.getElementById('file-input');
 
+    // --- State Management for Conversation Context ---
+    let conversationState = {
+        topic: null,    // e.g., 'pothole', 'garbage'
+        awaiting: null, // e.g., 'location', 'address', 'details'
+    };
+
     // --- Event Listeners ---
     chatForm.addEventListener('submit', (event) => {
         event.preventDefault(); // Prevent page reload on form submission
@@ -103,16 +109,88 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function getBotResponse(userMessage) {
         const lowerCaseMessage = userMessage.toLowerCase();
-        
-        // A more scalable way to handle responses
+        const details = userMessage; // Keep original casing for the response
+
+        // --- State-based follow-up logic ---
+        // If the bot is waiting for information, handle it here first.
+        if (conversationState.awaiting) {
+            const topic = conversationState.topic;
+
+            // Reset state immediately to be ready for the next independent query.
+            conversationState = { topic: null, awaiting: null };
+
+            // Provide a custom follow-up response based on the original topic.
+            switch (topic) {
+                case 'pothole':
+                    return `Got it! The location "${details}" has been noted. Our team will inspect the site shortly. Is there anything else I can help you with?`;
+                case 'garbage':
+                    return `Thanks for the details. The Sanitation Department has been notified about the issue at "${details}" and will follow up. You're welcome! Is there anything else I can help you with?`;
+                case 'water_leak':
+                    return `Thank you. The location "${details}" has been received and crews are being dispatched. Is there anything else I can help you with?`;
+                case 'streetlight':
+                    return `Thank you for the information: "${details}". We have updated the report and a crew will investigate. Is there anything else I can help you with?`;
+                case 'parking':
+                    return `Thank you. The issue with meter "${details}" has been logged. A technician will be dispatched. Is there anything else I can help you with?`;
+                case 'noise':
+                    return `Thank you for providing the details: "${details}". The information has been added to your case file.`;
+                default:
+                    return "Thank you for the information. We have updated your report.";
+            }
+        }
+
+        const generateTicketNumber = () => `CR${Math.floor(100000 + Math.random() * 900000)}`;
+
+        // --- Keyword-based initial response logic ---
         const responseRules = [
             { keywords: ['hello', 'hi', 'hey'], response: "Hello there! How can I assist you with city services today?" },
-            { keywords: ['pothole', 'road damage'], response: "I can help with that. To report a pothole, please provide the street address or nearest intersection. You can also file a report online at city-services.com/potholes." },
-            { keywords: ['garbage', 'trash', 'recycling', 'waste'], response: "For garbage collection, please tell me your address. You can check the collection schedule at city-services.com/waste. If you have a specific issue like a missed pickup or a broken bin, please provide details." },
-            { keywords: ['water leak', 'pipe burst'], response: "A water leak is a priority. Please provide the location immediately so I can forward it to the water department. For emergencies, please call 911." },
-            { keywords: ['streetlight', 'street light'], response: "To report a streetlight outage, please provide the pole number (if visible) and the nearest address or intersection. This will help us dispatch a crew quickly." },
-            { keywords: ['parking', 'meter'], response: "For parking inquiries, are you looking for information on tickets, permits, or meter issues? For meter issues, please provide the meter number and location." },
-            { keywords: ['noise', 'loud'], response: "For noise complaints, please specify the location and time of the disturbance. Note that for ongoing issues, it's best to contact the non-emergency police line." },
+            {
+                keywords: ['pothole', 'road damage'],
+                response: () => {
+                    conversationState.topic = 'pothole';
+                    conversationState.awaiting = 'location';
+                    return `Thank you for reporting the road issue. Your complaint has been registered with ticket number ${generateTicketNumber()} and forwarded to the Public Works Department. Please provide the exact street address or nearest intersection for a faster response.`;
+                }
+            },
+            {
+                keywords: ['garbage', 'trash', 'recycling', 'waste'],
+                response: () => {
+                    conversationState.topic = 'garbage';
+                    conversationState.awaiting = 'address';
+                    return `For waste management issues, your complaint has been noted with reference number ${generateTicketNumber()} and sent to the Sanitation Department. Please provide your address and specify if it's a missed pickup, a broken bin, or another issue. You can also check schedules at city-services.com/waste.`;
+                }
+            },
+            {
+                keywords: ['water leak', 'pipe burst'],
+                response: () => {
+                    conversationState.topic = 'water_leak';
+                    conversationState.awaiting = 'location';
+                    return `A water leak is a priority. Your report has been logged with complaint number ${generateTicketNumber()} and immediately forwarded to the Water Department. Please provide the location. For emergencies, please call 911.`;
+                }
+            },
+            {
+                keywords: ['streetlight', 'street light'],
+                response: () => {
+                    conversationState.topic = 'streetlight';
+                    conversationState.awaiting = 'location';
+                    return `Thank you for the report. Your streetlight issue has been recorded with ticket number ${generateTicketNumber()} and assigned to the Maintenance crew. To help us, please provide the pole number (if visible) and the nearest address.`;
+                }
+            },
+            {
+                keywords: ['parking', 'meter'],
+                response: () => {
+                    conversationState.topic = 'parking';
+                    conversationState.awaiting = 'details';
+                    return `For parking meter issues, your report is noted with reference ${generateTicketNumber()}. Please provide the meter number and location. For other parking inquiries like tickets or permits, please specify.`;
+                }
+            },
+            {
+                keywords: ['noise', 'loud'],
+                response: () => {
+                    conversationState.topic = 'noise';
+                    conversationState.awaiting = 'details';
+                    return `Your noise complaint has been logged with case number ${generateTicketNumber()} and forwarded to the relevant authorities. Please provide the location and time of the disturbance. For ongoing issues, it's best to contact the non-emergency police line.`;
+                }
+            },
             { keywords: ['tax', 'property tax'], response: "You can view and pay your property taxes online at city-services.com/taxes. Do you have a specific question about your bill?" },
             { keywords: ['thank you', 'thanks', 'appreciate it'], response: "You're welcome! Is there anything else I can help you with?" }
         ];
@@ -120,6 +198,10 @@ document.addEventListener('DOMContentLoaded', () => {
         for (const rule of responseRules) {
             // Check if any of the keywords for a rule are present in the user's message
             if (rule.keywords.some(keyword => lowerCaseMessage.includes(keyword))) {
+                // If the response is a function, call it to get the dynamic response.
+                if (typeof rule.response === 'function') {
+                    return rule.response();
+                }
                 return rule.response;
             }
         }
