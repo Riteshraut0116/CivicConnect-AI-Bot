@@ -49,8 +49,6 @@ Once you run the full-stack application:
 
 ## 🛠️ Tech Stack
 
-## 🛠️ Tech Stack
-
 | Layer     | Technologies Used                                      |
 |-----------|--------------------------------------------------------|
 | Frontend  | HTML5, CSS3, JavaScript (ES6+), Bootstrap              |
