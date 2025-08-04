@@ -6,22 +6,22 @@ A friendly and intelligent chatbot designed to serve as a Smart City Assistant. 
 
 ## ✨ Features
 
-**Interactive Chat UI:** A responsive and intuitive chat window built with HTML, CSS, and JavaScript.
-**Gemini-Powered AI Backend:** The chatbot now connects to a Flask backend integrated with Google Gemini, enabling intelligent, context-aware responses.
-**Civic Issue Reporting:** The bot understands and responds to common civic concerns like:
-Potholes 🛣️
-Garbage & Recycling 🗑️
-Water Leaks 💧
-Streetlight Outages 💡
-Parking & Taxes 🅿️
-**Ticket Generation:** Automatically creates fictional report IDs (e.g., CR123456) for user-submitted issues.
-**Department Routing:** Identifies the appropriate city department based on the issue.
-**Follow-Up Prompts:** Asks for location, address, or additional details to complete the report.
-**Session Management:** Maintains separate chat histories for different users.
-**Typing Indicator:** A sleek animation shows when the bot is "thinking," improving user experience.
-**Auto-Resizing Text Area:** The message input box grows and shrinks dynamically with the content.
-**Theme Toggle (Day/Night Mode):** Users can switch between light and dark themes for better accessibility and comfort.
-**Attachment Support:** Users can upload files or images directly in the chat interface.
+- **Interactive Chat UI:** A responsive and intuitive chat window built with HTML, CSS, and JavaScript.
+- **Gemini-Powered AI Backend:** The chatbot now connects to a Flask backend integrated with Google Gemini, enabling intelligent, context-aware responses.
+- **Civic Issue Reporting:** The bot understands and responds to common civic concerns like:
+- Potholes 🛣️
+- Garbage & Recycling 🗑️
+- Water Leaks 💧
+- Streetlight Outages 💡
+- Parking & Taxes 🅿️
+- **Ticket Generation:** Automatically creates fictional report IDs (e.g., CR123456) for user-submitted issues.
+- **Department Routing:** Identifies the appropriate city department based on the issue.
+- **Follow-Up Prompts:** Asks for location, address, or additional details to complete the report.
+- **Session Management:** Maintains separate chat histories for different users.
+- **Typing Indicator:** A sleek animation shows when the bot is "thinking," improving user experience.
+- **Auto-Resizing Text Area:** The message input box grows and shrinks dynamically with the content.
+- **Theme Toggle (Day/Night Mode):** Users can switch between light and dark themes for better accessibility and comfort.
+- **Attachment Support:** Users can upload files or images directly in the chat interface.
 
 ---
 
@@ -72,23 +72,23 @@ Python 3.7+
 Google Gemini API Key
 
 **Steps:**
-# 1. Clone the repository
+1. Clone the repository
 git clone <repository-url>
 cd civicconnect-ai
 
-# 2. Create a virtual environment
+2. Create a virtual environment
 python -m venv venv
-# Activate it
+- Activate it
 venv\Scripts\activate  # Windows
 source venv/bin/activate  # macOS/Linux
 
-# 3. Install dependencies
+ 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Add your Gemini API key to a .env file
+ 4. Add your Gemini API key to a .env file
 echo GEMINI_API_KEY="your_api_key_here" > .env
 
-# 5. Run the Flask server
+ 5. Run the Flask server
 python app.py
 
 **Access the App:**
