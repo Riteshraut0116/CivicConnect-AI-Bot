@@ -41,9 +41,16 @@ Once you run the full-stack application:
 
 ---
 
-## 🌐 Live Demo
+## 🌐 Live Demo (UI Example Only)
+
+You can explore the **CivicConnect AI chatbot interface** live on Netlify:
 
 [- 🔗 Click here to view the live site on Netlify](https://civicconnectbot.netlify.app/)
+
+
+> **Note:** This demo showcases the **frontend UI only**.  
+> To experience full functionality with Gemini-powered AI responses,  
+> clone the repository and run the backend locally using the steps in the **Getting Started** section.
 
 ---
 
