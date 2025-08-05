@@ -2,6 +2,8 @@ import os
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
+import PIL.Image
+import io
 import google.generativeai as genai
 
 load_dotenv()
@@ -51,20 +53,34 @@ When a user reports an issue, you should:
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
-        data = request.get_json()
-        message = data.get('message')
-        session_id = data.get('sessionId')
-
-        if not message or not session_id:
+        # Handle multipart/form-data instead of JSON
+        if 'sessionId' not in request.form:
             return jsonify({'error': 'Message and sessionId are required'}), 400
+
+        message = request.form.get('message', '') # Message can be empty if only an image is sent
+        session_id = request.form.get('sessionId')
+        image_file = request.files.get('image')
+
+        if not message and not image_file:
+            return jsonify({'error': 'A message or an image is required.'}), 400
 
         # Initialize chat history for a new session
         if session_id not in chat_sessions:
             chat_sessions[session_id] = model.start_chat(history=[system_instruction])
 
         chat = chat_sessions[session_id]
-        response = chat.send_message(message)
         
+        # Prepare content for Gemini, including the image if it exists
+        content_parts = [message]
+        if image_file:
+            try:
+                img = PIL.Image.open(image_file.stream)
+                content_parts.append(img)
+            except Exception as e:
+                print(f"Error processing image: {e}")
+                return jsonify({'error': 'Invalid or corrupted image file.'}), 400
+
+        response = chat.send_message(content_parts)
         return jsonify({'reply': response.text})
     except Exception as e:
         print(f"Error with Gemini API: {e}")

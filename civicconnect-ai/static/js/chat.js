@@ -1,124 +1,116 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const chatMessages = document.getElementById('chat-messages');
     const chatForm = document.getElementById('chat-form');
-    const userInput = document.getElementById('user-input'); // Now a textarea
-    const typingIndicator = document.querySelector('.typing-indicator');
     const attachBtn = document.getElementById('attach-btn');
-    const fileInput = document.getElementById('file-input');
+    const imageInput = document.getElementById('file-input');
+    const textInput = document.getElementById('user-input');
+    const chatMessages = document.getElementById('chat-messages');
+    const typingIndicator = document.querySelector('.typing-indicator');
 
-    // --- Session Management ---
-    // Create a unique session ID for the user's visit to maintain conversation history
-    let sessionId = sessionStorage.getItem('chatSessionId');
+    // Generate a unique session ID for the user
+    let sessionId = sessionStorage.getItem('chatbotSessionId');
     if (!sessionId) {
-        sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(2)}`;
-        sessionStorage.setItem('chatSessionId', sessionId);
+        sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+        sessionStorage.setItem('chatbotSessionId', sessionId);
     }
 
+    let attachedFile = null;
+
     // --- Event Listeners ---
-    chatForm.addEventListener('submit', (event) => {
-        event.preventDefault(); // Prevent page reload on form submission
+
+    attachBtn.addEventListener('click', () => {
+        imageInput.click();
+    });
+
+    imageInput.addEventListener('change', (event) => {
+        if (event.target.files && event.target.files[0]) {
+            attachedFile = event.target.files[0];
+            // Update placeholder to show the attached file name
+            textInput.placeholder = `Image attached: ${attachedFile.name}`;
+        }
+    });
+
+    chatForm.addEventListener('submit', (e) => {
+        e.preventDefault();
         sendMessage();
     });
 
-    userInput.addEventListener('keydown', (event) => {
-        // Send message on Enter, but allow new line with Shift+Enter
-        if (event.key === 'Enter' && !event.shiftKey) {
-            event.preventDefault();
+    // Allow sending with Enter, but new line with Shift+Enter
+    textInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
             sendMessage();
         }
     });
 
-    userInput.addEventListener('input', () => {
-        // Auto-resize textarea
-        userInput.style.height = 'auto';
-        userInput.style.height = `${userInput.scrollHeight}px`;
-    });
+    // --- Core Functions ---
 
-    attachBtn.addEventListener('click', () => {
-        fileInput.click(); // Trigger hidden file input
-    });
-
-    fileInput.addEventListener('change', () => {
-        const files = fileInput.files;
-        if (files.length > 0) {
-            handleFileAttachment(files);
-        }
-    });
-    /**
-     * Adds a new message to the chat window and scrolls to the bottom.
-     * @param {string} text The message content.
-     * @param {string} sender The sender, either 'user' or 'bot'.
-     */
-    function addMessage(text, sender) {
+    function appendMessage(messageText, sender, imageUrl = null) {
         const messageDiv = document.createElement('div');
         messageDiv.classList.add('message', `${sender}-message`);
-        
+
         const p = document.createElement('p');
-        p.textContent = text;
+        p.textContent = messageText;
         messageDiv.appendChild(p);
 
-        // Add the new message before the typing indicator
-        chatMessages.insertBefore(messageDiv, typingIndicator);
+        if (imageUrl) {
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.style.maxWidth = '100%';
+            img.style.borderRadius = '8px';
+            img.style.marginTop = '8px';
+            messageDiv.appendChild(img);
+        }
 
-        // Scroll to the bottom of the chat window
+        // Insert the new message before the typing indicator
+        chatMessages.insertBefore(messageDiv, typingIndicator);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    /**
-     * Handles the logic of sending a message from the user.
-     */
     async function sendMessage() {
-        const message = userInput.value.trim();
-        if (message === '') return; // Don't send empty messages
+        const messageText = textInput.value.trim();
 
-        addMessage(message, 'user');
-        userInput.value = ''; // Clear textarea
-        // Reset textarea height after sending
-        userInput.style.height = 'auto';
-        userInput.focus();
+        if (!messageText && !attachedFile) {
+            return; // Don't send empty messages
+        }
 
-        // Show typing indicator and get bot response
+        const imageUrl = attachedFile ? URL.createObjectURL(attachedFile) : null;
+        appendMessage(messageText, 'user', imageUrl);
+
         typingIndicator.style.display = 'flex';
         chatMessages.scrollTop = chatMessages.scrollHeight;
 
+        const formData = new FormData();
+        formData.append('sessionId', sessionId);
+        formData.append('message', messageText);
+        if (attachedFile) {
+            formData.append('image', attachedFile, attachedFile.name);
+        }
+
+        // Clear inputs after preparing the form data
+        textInput.value = '';
+        imageInput.value = ''; // Clear the file input
+        attachedFile = null;
+        textInput.placeholder = 'Type your message here...';
+
         try {
-            // Send the message to the backend server
             const response = await fetch('/chat', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ message: message, sessionId: sessionId }),
+                body: formData // Send as FormData, not JSON
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                const errorData = await response.json();
+                throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
-            const botReply = data.reply;
-            
-            typingIndicator.style.display = 'none';
-            addMessage(botReply, 'bot');
+            appendMessage(data.reply, 'bot');
         } catch (error) {
             console.error('Error sending message:', error);
+            appendMessage(`Sorry, I encountered an error. Please try again.`, 'bot');
+        } finally {
             typingIndicator.style.display = 'none';
-            addMessage('Sorry, I seem to be having trouble connecting. Please try again later.', 'bot');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
-    }
-
-    /**
-     * Handles file attachments by displaying a message in the chat.
-     * @param {FileList} files The list of files attached by the user.
-     */
-    function handleFileAttachment(files) {
-        let fileNames = [];
-        for (const file of files) {
-            fileNames.push(file.name);
-        }
-        const fileMessage = `Attached file(s): ${fileNames.join(', ')}`;
-        addMessage(fileMessage, 'user');
-        // In a real application, you would now upload the files to a server.
-        fileInput.value = ''; // Reset file input
     }
 });
