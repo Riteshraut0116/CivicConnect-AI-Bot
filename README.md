@@ -59,7 +59,7 @@ You can explore the **CivicConnect AI chatbot interface** live on Netlify:
 | Layer     | Technologies Used                                      |
 |-----------|--------------------------------------------------------|
 | Frontend  | HTML5, CSS3, JavaScript (ES6+), Bootstrap              |
-| Backend   | Python, Flask, Google Gemini API, python-dotenv        |
+| Backend   | Python, Flask, Google Gemini API, python-dotenv, Pillow|        |
 
 ---
 
