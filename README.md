@@ -126,7 +126,8 @@ civicconnect-ai/
 ├── .gitignore               # Git ignore rules for version control
 ├── app.py                   # Flask backend server with Gemini integration
 ├── requirements.txt         # Python dependencies for the backend
-└── system_prompt.txt        # System prompt text for guiding Gemini responses
+├── system_prompt.txt        # System prompt text for guiding Gemini responses
+└── README.md                # Project documentation and deployment instructions
 
 ---
 
