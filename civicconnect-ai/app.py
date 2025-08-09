@@ -2,11 +2,24 @@ import os
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
+import logging
 import PIL.Image
-import io
 import google.generativeai as genai
 
+# --- Basic Logging Setup ---
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 load_dotenv()
+
+# --- Helper function to load the system prompt ---
+def load_system_prompt(file_path="system_prompt.txt"):
+    """Loads the system prompt from a text file."""
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        logging.warning(f"{file_path} not found. A default prompt will be used.")
+        return "You are a helpful assistant."
 
 # --- Flask App Initialization ---
 # We configure the static folder to be 'static' and serve it from the root URL
@@ -21,34 +34,14 @@ if not api_key:
 genai.configure(api_key=api_key)
 model = genai.GenerativeModel('gemini-1.5-flash-latest')
 
-# In-memory session store for demonstration. In production, you might use a database.
+# In-memory session store.
+# WARNING: This is for demonstration only. In a production environment, this will
+# consume more memory over time and all chat histories will be lost on application
+# restart. Consider using a persistent store like Redis or a database for production.
 chat_sessions = {}
 
 # System prompt to guide the AI on its role and behavior
-system_instruction = {
-    "role": "model",
-    "parts": [{
-        "text": """You are CivicConnect AI, a helpful and friendly chatbot for a city's public services website.
-Your primary goal is to assist users with their civic issues.
-You should be able to handle inquiries about:
-- Potholes and road damage
-- Garbage, trash, recycling, and waste collection
-- Water leaks and pipe bursts
-- Streetlight outages
-- Parking meter issues and other parking inquiries
-- Noise complaints
-- Property taxes
-
-When a user reports an issue, you should:
-1. Acknowledge the report.
-2. Generate a fictional ticket/reference number (e.g., CR123456).
-3. Inform them which department the issue has been forwarded to.
-4. Ask for specific, necessary follow-up information like location, address, or other details.
-5. Keep your responses concise and helpful.
-6. If you don't understand, politely ask the user to rephrase or state the topics you can help with.
-7. Be conversational and empathetic."""
-    }],
-}
+system_instruction = {"role": "model", "parts": [{"text": load_system_prompt()}]}
 
 @app.route('/chat', methods=['POST'])
 def chat():
@@ -77,13 +70,13 @@ def chat():
                 img = PIL.Image.open(image_file.stream)
                 content_parts.append(img)
             except Exception as e:
-                print(f"Error processing image: {e}")
+                logging.error(f"Error processing image for session {session_id}: {e}")
                 return jsonify({'error': 'Invalid or corrupted image file.'}), 400
 
         response = chat.send_message(content_parts)
         return jsonify({'reply': response.text})
     except Exception as e:
-        print(f"Error with Gemini API: {e}")
+        logging.error(f"An unexpected error occurred in the chat endpoint: {e}", exc_info=True)
         return jsonify({'error': 'Failed to get a response from the AI.'}), 500
 
 @app.route('/')
@@ -91,4 +84,9 @@ def serve_index():
     return send_from_directory(app.static_folder, 'index.html')
 
 if __name__ == '__main__':
-    app.run(port=3000, debug=True)
+    # The development server is not for production use.
+    # For local testing, it's better to run with: flask run
+    # In production, a WSGI server like Gunicorn will be used.
+    # Set debug=True only if an environment variable is set, making it safer.
+    is_debug = os.getenv('FLASK_DEBUG', 'false').lower() in ('true', '1', 't')
+    app.run(host='0.0.0.0', port=int(os.getenv('PORT', 5000)), debug=is_debug)

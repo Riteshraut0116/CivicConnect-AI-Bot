@@ -41,16 +41,14 @@ Once you run the full-stack application:
 
 ---
 
-## 🌐 Live Demo (UI Example Only)
+## 🌐 Live Demo
 
-You can explore the **CivicConnect AI chatbot interface** live on Netlify:
+Experience the full-stack **CivicConnect AI** application live, deployed on Azure App Service:
 
-[- 🔗 Click here to view the live site on Netlify](https://civicconnectbot.netlify.app/)
+[- 🔗 Click here to view the live application](https://cts-vibeappce3814-3.azurewebsites.net/)
 
 
-> **Note:** This demo showcases the **frontend UI only**.  
-> To experience full functionality with Gemini-powered AI responses,  
-> clone the repository and run the backend locally using the steps in the **Getting Started** section.
+> **Note:** The application is fully functional, connecting to the Gemini AI backend to provide real-time, intelligent responses.
 
 ---
 
@@ -59,7 +57,8 @@ You can explore the **CivicConnect AI chatbot interface** live on Netlify:
 | Layer     | Technologies Used                                      |
 |-----------|--------------------------------------------------------|
 | Frontend  | HTML5, CSS3, JavaScript (ES6+), Bootstrap              |
-| Backend   | Python, Flask, Google Gemini API, python-dotenv, Pillow|        |
+| Backend   | Python, Flask, Google Gemini API, python-dotenv, Pillow|
+| Deployment| Azure App Service                                      |
 
 ---
 
@@ -110,27 +109,24 @@ python app.py
 
 civicconnect-ai/
 │
-├── data/                            # Stores structured data used by the bot
-│   └── grievances.json              # Sample dataset for civic issue types
+├── static/                  # Contains all frontend static assets
+│   ├── css/                 # Stylesheets for layout and themes
+│   │   ├── style.css        # Main UI styling
+│   │   └── theme.css        # Light/Dark mode styles
+│   ├── images/              # Visual assets and backgrounds
+│   │   ├── botbackground.png
+│   │   ├── mainbackground.png
+│   │   └── screenshot.png   # UI preview image
+│   └── js/                  # JavaScript for interactivity
+│       ├── chat.js          # Handles chat logic and bot responses
+│       └── theme.js         # Manages theme switching
 │
-├── static/                          # All frontend assets
-│   ├── css/                         # Stylesheets for layout and themes
-│   │   ├── style.css                # Main UI styling
-│   │   └── theme.css                # Styles for light/dark mode toggle
-│   ├── images/                      # Visual assets and backgrounds
-│   │   ├── botbackground.png        # Background for chat area
-│   │   ├── mainbackground.png       # Background for main page
-│   │   └── screenshot.png           # Screenshot of the chatbot UI
-│   ├── js/                          # JavaScript for interactivity
-│   │   ├── chat.js                  # Handles chat logic and bot responses
-│   │   └── theme.js                 # Manages theme switching
-│   └── index.html                   # Main chatbot interface page
-│
-├── .env                             # Environment variables (e.g., Gemini API key)
-├── .gitignore                       # Files and folders to ignore in Git
-├── app.py                           # Flask backend server with Gemini integration
-├── requirements.txt                 # Python dependencies
-└── README.md                        # Project documentation
+├── index.html               # Main chatbot interface page
+├── .env                     # Environment variables (e.g., Gemini API key)
+├── .gitignore               # Git ignore rules for version control
+├── app.py                   # Flask backend server with Gemini integration
+├── requirements.txt         # Python dependencies for the backend
+└── system_prompt.txt        # System prompt text for guiding Gemini responses
 
 ---
 
